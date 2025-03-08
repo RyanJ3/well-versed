@@ -13,7 +13,7 @@ import {AuthService} from './register/auth.service';
       <header class="app-header">
         <div class="logo-container">
           <h1 class="app-title">
-            <span class="app-title-text">Bible App</span>
+            <span class="app-title-text">Well Versed</span>
           </h1>
         </div>
 
