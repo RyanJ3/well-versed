@@ -4,54 +4,54 @@
 
   <!-- Testament Selector -->
   <app-testament-selector
-    [testaments]="testaments"
-    [selectedTestament]="selectedTestament"
-    (testamentChange)="onTestamentChange($event)"
     (resetTestament)="resetTestament()"
+    (testamentChange)="onTestamentChange($event)"
+    [selectedTestament]="selectedTestament"
+    [testaments]="testaments"
   ></app-testament-selector>
 
   <!-- Group Selector -->
   <app-group-selector
-    [availableGroups]="availableGroups"
-    [selectedGroup]="selectedGroup"
     (groupChange)="onGroupChange($event)"
     (resetGroup)="resetGroup()"
+    [availableGroups]="availableGroups"
+    [selectedGroup]="selectedGroup"
   ></app-group-selector>
 
   <!-- Book Selector -->
   <app-book-selector
-    [booksInGroup]="booksInGroup"
-    [selectedGroup]="selectedGroup"
-    [selectedBook]="selectedBook"
     (bookChange)="onBookChange($event)"
+    [booksInGroup]="booksInGroup"
+    [selectedBook]="selectedBook"
+    [selectedGroup]="selectedGroup"
   ></app-book-selector>
 
   <!-- Book Information -->
   <app-book-info
+    (resetBook)="resetBook()"
+    [completedChapters]="completedChapters"
     [currentBook]="currentBook"
+    [inProgressChapters]="inProgressChapters"
     [memorizedVerses]="memorizedVerses"
     [totalVerses]="totalVerses"
-    [completedChapters]="completedChapters"
-    [inProgressChapters]="inProgressChapters"
-    (resetBook)="resetBook()"
   ></app-book-info>
 
   <!-- Chapter Selection -->
   <app-chapter-selector
+    (chapterSelect)="onChapterSelect($event)"
     [currentBookProgress]="currentBookProgress"
     [selectedChapter]="selectedChapter"
-    (chapterSelect)="onChapterSelect($event)"
   ></app-chapter-selector>
 
   <!-- Selected Chapter Details with Verse Selector -->
   <app-chapter-progress
-    [currentBook]="currentBook"
-    [selectedChapter]="selectedChapter"
-    [selectedChapterIndex]="selectedChapterIndex"
-    [chapterProgress]="currentBookProgress[selectedChapterIndex]"
-    (incrementVersesEvent)="incrementVerses()"
     (decrementVersesEvent)="decrementVerses()"
-    (updateProgress)="updateMemorizedVerses($event)"
+    (incrementVersesEvent)="incrementVerses()"
     (resetChapter)="resetChapter()"
+    (updateProgress)="updateMemorizedVerses($event)"
+    [chapterProgress]="currentBookProgress[selectedChapterIndex]"
+    [currentBook]="currentBook"
+    [selectedChapterIndex]="selectedChapterIndex"
+    [selectedChapter]="selectedChapter"
   ></app-chapter-progress>
 </div>

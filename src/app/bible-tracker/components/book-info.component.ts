@@ -1,13 +1,12 @@
 // components/book-info.component.ts
-import { Component, Input, Output, EventEmitter } from '@angular/core';
-import { BibleBook } from '../models';
-import { NgIf } from '@angular/common';
-import {ConfirmationModalComponent} from "./confirmation-modal";
+import {Component, EventEmitter, Input, Output} from '@angular/core';
+import {BibleBook} from '../models';
+import {ConfirmationModalComponent} from '../../shared/components/notification/confirmation-modal';
 
 @Component({
   selector: 'app-book-info',
   standalone: true,
-  imports: [ConfirmationModalComponent, ConfirmationModalComponent, ConfirmationModalComponent],
+  imports: [ConfirmationModalComponent],
   template: `
     <div class="mb-6 bg-blue-50 p-4 rounded-lg">
       <div class="flex justify-between items-center mb-2">
@@ -40,16 +39,16 @@ import {ConfirmationModalComponent} from "./confirmation-modal";
       <div class="mt-4">
         <div class="w-full bg-gray-200 rounded-full h-4">
           <div
-              class="bg-blue-600 h-4 rounded-full"
-              [style.width.%]="percentComplete"
+            class="bg-blue-600 h-4 rounded-full"
+            [style.width.%]="percentComplete"
           ></div>
         </div>
       </div>
 
       <div class="mt-4 text-right">
         <button
-            (click)="showConfirmModal()"
-            class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm"
+          (click)="showConfirmModal()"
+          class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm"
         >
           Reset Book
         </button>
@@ -58,12 +57,12 @@ import {ConfirmationModalComponent} from "./confirmation-modal";
 
     <!-- Confirmation Modal -->
     <app-confirmation-modal
-        [isVisible]="isConfirmModalVisible"
-        [title]="'Reset Book'"
-        [message]="'Are you sure you want to reset all progress for ' + (currentBook?.bookName || '') + '? This action cannot be undone.'"
-        [confirmText]="'Reset'"
-        (confirm)="confirmReset()"
-        (cancel)="cancelReset()"
+      [isVisible]="isConfirmModalVisible"
+      [title]="'Reset Book'"
+      [message]="'Are you sure you want to reset all progress for ' + (currentBook?.bookName || '') + '? This action cannot be undone.'"
+      [confirmText]="'Reset'"
+      (confirm)="confirmReset()"
+      (cancel)="cancelReset()"
     ></app-confirmation-modal>
   `
 })

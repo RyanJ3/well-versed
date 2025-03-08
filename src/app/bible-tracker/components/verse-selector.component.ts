@@ -1,6 +1,6 @@
 // components/verse-selector.component.ts
-import { Component, Input, Output, EventEmitter } from '@angular/core';
-import { NgClass, NgFor } from '@angular/common';
+import {Component, EventEmitter, Input, Output} from '@angular/core';
+import {NgClass, NgFor} from '@angular/common';
 
 @Component({
   selector: 'app-verse-selector',
@@ -135,21 +135,21 @@ export class VerseSelectorComponent {
 
   @Output() versesChange = new EventEmitter<boolean[]>();
 
-  ngOnChanges(): void {
-    // Make sure versesMemorized is always the right length
-    if (!this.versesMemorized || this.versesMemorized.length !== this.totalVerses) {
-      this.versesMemorized = Array(this.totalVerses).fill(false);
-    }
-  }
-
   get versesArray(): number[] {
-    return Array.from({ length: this.totalVerses }, (_, i) => i + 1);
+    return Array.from({length: this.totalVerses}, (_, i) => i + 1);
   }
 
   get progressPercent(): number {
     if (!this.totalVerses) return 0;
     const memorizedCount = this.versesMemorized.filter(v => v).length;
     return Math.round((memorizedCount / this.totalVerses) * 100);
+  }
+
+  ngOnChanges(): void {
+    // Make sure versesMemorized is always the right length
+    if (!this.versesMemorized || this.versesMemorized.length !== this.totalVerses) {
+      this.versesMemorized = Array(this.totalVerses).fill(false);
+    }
   }
 
   isVerseSelected(verseNumber: number): boolean {

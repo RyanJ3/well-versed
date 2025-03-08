@@ -1,22 +1,22 @@
 // src/app/app.routes.ts
-import { Routes } from '@angular/router';
-import { FlowMemorizationComponent } from './flow-memorization/flow-memorization.component';
-import { BibleTrackerComponent } from './bible-tracker/bible-tracker.component';
-import { ProfileComponent } from './components/profile/profile.component';
-import { AuthGuard } from './guards/auth.guard';
+import {Routes} from '@angular/router';
+import {BibleTrackerComponent} from './bible-tracker/bible-tracker.component';
 import {LoginComponent} from "./auth/login/login.component";
-import {RegisterComponent} from "./register/register.component";
+import {RegisterComponent} from './auth/register/register.component';
+import {ProfileComponent} from './shared/components/profile/profile.component';
+import {AuthGuard} from './auth/auth.guard';
+import {FlowMemorizationComponent} from './memorization/flow/flow-memorization.component';
 
 export const routes: Routes = [
-  { path: '', component: BibleTrackerComponent },  // Home page
-  { path: 'login', component: LoginComponent },
-  { path: 'register', component: RegisterComponent },
+  {path: '', component: BibleTrackerComponent},  // Home page
+  {path: 'login', component: LoginComponent},
+  {path: 'register', component: RegisterComponent},
   {
     path: 'profile',
     component: ProfileComponent,
     canActivate: [AuthGuard]
   },
-  { path: 'stats', component: BibleTrackerComponent }, // stats page
-  { path: 'flow-memorization', component: FlowMemorizationComponent },  // FLOW memorization tool route
-  { path: '**', redirectTo: '' }  // Catch all other routes and redirect to home
+  {path: 'stats', component: BibleTrackerComponent}, // stats page
+  {path: 'flow', component: FlowMemorizationComponent},  // FLOW memorization tool route
+  {path: '**', redirectTo: ''}  // Catch all other routes and redirect to home
 ];

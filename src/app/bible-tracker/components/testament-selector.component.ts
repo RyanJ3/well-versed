@@ -1,9 +1,9 @@
 // components/testament-selector.component.ts - Enhanced version with vertical layout
-import { Component, Input, Output, EventEmitter } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { BibleTrackerService } from '../bible-tracker-service';
-import { ConfirmationModalComponent } from "./confirmation-modal";
-import { BIBLE_DATA } from '../models';
+import {Component, EventEmitter, Input, Output} from '@angular/core';
+import {CommonModule} from '@angular/common';
+import {BibleTrackerService} from '../bible-tracker-service';
+import {BIBLE_DATA} from '../models';
+import {ConfirmationModalComponent} from '../../shared/components/notification/confirmation-modal';
 
 @Component({
   selector: 'app-testament-selector',
@@ -15,12 +15,12 @@ import { BIBLE_DATA } from '../models';
       <!-- Vertical testament cards - one testament per row -->
       <div class="flex flex-col gap-4">
         <button
-            *ngFor="let testament of testaments"
-            (click)="selectTestament(testament)"
-            class="testament-card"
-            [class.old-testament]="testament === 'Old Testament'"
-            [class.new-testament]="testament === 'New Testament'"
-            [class.active]="selectedTestament === testament"
+          *ngFor="let testament of testaments"
+          (click)="selectTestament(testament)"
+          class="testament-card"
+          [class.old-testament]="testament === 'Old Testament'"
+          [class.new-testament]="testament === 'New Testament'"
+          [class.active]="selectedTestament === testament"
         >
           <div class="card-content">
             <!-- Top section with title and statistics -->
@@ -29,7 +29,8 @@ import { BIBLE_DATA } from '../models';
                 <div class="text-xl font-semibold" [ngClass]="{
                   'text-amber-700': testament === 'Old Testament',
                   'text-indigo-700': testament === 'New Testament'
-                }">{{ testament }}</div>
+                }">{{ testament }}
+                </div>
                 <div class="text-sm mt-1" [ngClass]="{
                   'text-amber-600': testament === 'Old Testament',
                   'text-indigo-600': testament === 'New Testament'
@@ -51,12 +52,12 @@ import { BIBLE_DATA } from '../models';
             <!-- Progress bar -->
             <div class="mt-3 h-2 bg-gray-200 rounded-full overflow-hidden">
               <div
-                  class="h-2 rounded-full transition-width relative"
-                  [ngClass]="{
+                class="h-2 rounded-full transition-width relative"
+                [ngClass]="{
                   'bg-gradient-to-r from-amber-500 to-amber-400': testament === 'Old Testament',
                   'bg-gradient-to-r from-indigo-600 to-indigo-400': testament === 'New Testament'
                 }"
-                  [style.width.%]="getTestamentStats(testament).percentComplete"
+                [style.width.%]="getTestamentStats(testament).percentComplete"
               >
                 <!-- Add a subtle animation effect for an active progress bar -->
                 <div *ngIf="selectedTestament === testament"
@@ -83,8 +84,8 @@ import { BIBLE_DATA } from '../models';
 
       <div class="mt-4 text-right">
         <button
-            (click)="showConfirmModal()"
-            class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm transition-colors duration-200"
+          (click)="showConfirmModal()"
+          class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm transition-colors duration-200"
         >
           Reset {{ selectedTestament }}
         </button>
@@ -93,12 +94,12 @@ import { BIBLE_DATA } from '../models';
 
     <!-- Confirmation Modal -->
     <app-confirmation-modal
-        [isVisible]="isConfirmModalVisible"
-        [title]="'Reset Testament'"
-        [message]="'Are you sure you want to reset all progress for ' + selectedTestament + '? This action cannot be undone.'"
-        [confirmText]="'Reset'"
-        (confirm)="confirmReset()"
-        (cancel)="cancelReset()"
+      [isVisible]="isConfirmModalVisible"
+      [title]="'Reset Testament'"
+      [message]="'Are you sure you want to reset all progress for ' + selectedTestament + '? This action cannot be undone.'"
+      [confirmText]="'Reset'"
+      (confirm)="confirmReset()"
+      (cancel)="cancelReset()"
     ></app-confirmation-modal>
   `,
   styles: [`
@@ -157,18 +158,22 @@ import { BIBLE_DATA } from '../models';
     /* Progress Bar Shimmer Effect */
     .progress-shimmer {
       background: linear-gradient(
-          90deg,
-          rgba(255, 255, 255, 0) 0%,
-          rgba(255, 255, 255, 0.3) 50%,
-          rgba(255, 255, 255, 0) 100%
+        90deg,
+        rgba(255, 255, 255, 0) 0%,
+        rgba(255, 255, 255, 0.3) 50%,
+        rgba(255, 255, 255, 0) 100%
       );
       background-size: 200% 100%;
       animation: shimmer 2s infinite;
     }
 
     @keyframes shimmer {
-      0% { background-position: 200% 0; }
-      100% { background-position: -200% 0; }
+      0% {
+        background-position: 200% 0;
+      }
+      100% {
+        background-position: -200% 0;
+      }
     }
 
     /* Book Group Chips */
@@ -189,7 +194,7 @@ import { BIBLE_DATA } from '../models';
       right: 0;
       width: 120px;
       height: 120px;
-      background-image: radial-gradient(circle at top right, rgba(255,255,255,0.8) 10%, transparent 70%);
+      background-image: radial-gradient(circle at top right, rgba(255, 255, 255, 0.8) 10%, transparent 70%);
       z-index: 1;
     }
 
@@ -211,7 +216,8 @@ export class TestamentSelectorComponent {
 
   isConfirmModalVisible: boolean = false;
 
-  constructor(private bibleTrackerService: BibleTrackerService) {}
+  constructor(private bibleTrackerService: BibleTrackerService) {
+  }
 
   selectTestament(testament: string): void {
     this.testamentChange.emit(testament);
@@ -240,14 +246,14 @@ export class TestamentSelectorComponent {
 
   getTestamentChapterCount(testament: string): number {
     return Object.values(BIBLE_DATA)
-        .filter(book => book.testament === testament)
-        .reduce((sum, book) => sum + book.totalChapters, 0);
+      .filter(book => book.testament === testament)
+      .reduce((sum, book) => sum + book.totalChapters, 0);
   }
 
   getTestamentVerseCount(testament: string): number {
     return Object.values(BIBLE_DATA)
-        .filter(book => book.testament === testament)
-        .reduce((sum, book) => sum + book.totalVerses, 0);
+      .filter(book => book.testament === testament)
+      .reduce((sum, book) => sum + book.totalVerses, 0);
   }
 
   getTestamentGroups(testament: string): string[] {

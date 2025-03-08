@@ -1,8 +1,8 @@
 // components/chapter-selector.component.ts
-import { Component, Input, Output, EventEmitter } from '@angular/core';
-import { ChapterProgress } from '../models';
-import { FormsModule } from '@angular/forms';
-import { NgClass, NgForOf } from '@angular/common';
+import {Component, EventEmitter, Input, Output} from '@angular/core';
+import {ChapterProgress} from '../models';
+import {FormsModule} from '@angular/forms';
+import {NgClass, NgForOf} from '@angular/common';
 
 @Component({
   selector: 'app-chapter-selector',

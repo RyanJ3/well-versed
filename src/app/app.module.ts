@@ -1,11 +1,11 @@
 // src/app/app.module.ts - Updated with HttpClientModule
-import { NgModule } from '@angular/core';
-import { BrowserModule } from '@angular/platform-browser';
-import { FormsModule } from '@angular/forms';
+import {NgModule} from '@angular/core';
+import {BrowserModule} from '@angular/platform-browser';
+import {FormsModule} from '@angular/forms';
 
-import { AppComponent } from './app.component';
-import { BibleTrackerModule } from './bible-tracker/bible-tracker.module';
-import {EsvApiService} from './services/esv-api.service';
+import {AppComponent} from './app.component';
+import {BibleTrackerModule} from './bible-tracker/bible-tracker.module';
+import {EsvApiService} from './shared/services/esv-api.service';
 
 @NgModule({
   declarations: [
@@ -21,4 +21,5 @@ import {EsvApiService} from './services/esv-api.service';
   ],
   bootstrap: [AppComponent]
 })
-export class AppModule { }
+export class AppModule {
+}

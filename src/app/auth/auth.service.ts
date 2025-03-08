@@ -1,9 +1,8 @@
 // src/app/services/auth.service.ts
-import { Injectable, PLATFORM_ID, Inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Observable } from 'rxjs';
-import { Router } from '@angular/router';
-import { isPlatformBrowser } from '@angular/common';
+import {Inject, Injectable, PLATFORM_ID} from '@angular/core';
+import {BehaviorSubject, Observable} from 'rxjs';
+import {Router} from '@angular/router';
+import {isPlatformBrowser} from '@angular/common';
 
 export interface User {
   id: string;
@@ -16,13 +15,13 @@ export interface User {
   providedIn: 'root'
 })
 export class AuthService {
-  private currentUserSubject: BehaviorSubject<User | null>;
   public currentUser: Observable<User | null>;
-  private apiUrl = 'http://localhost:8000/api'; // Update with your API URL
+  private currentUserSubject: BehaviorSubject<User | null>;
+  //private apiUrl = 'http://localhost:8000/api'; // TODO Update with your API URL
   private isBrowser: boolean;
 
   constructor(
-    private http: HttpClient,
+    // private http: HttpClient,
     private router: Router,
     @Inject(PLATFORM_ID) platformId: Object
   ) {
@@ -85,7 +84,7 @@ export class AuthService {
   // Simplified mock register method
   async register(email: string, password: string, name: string, denomination: string): Promise<boolean> {
     try {
-      console.log('Mock registration with:', { email, name, denomination });
+      console.log('Mock registration with:', {email, name, denomination});
 
       // Create a mock user with a generated ID
       const mockUser: User = {
@@ -173,6 +172,6 @@ export class AuthService {
 
   // Simplified activity logging
   private logActivity(userId: string, title: string, description: string, type: string): void {
-    console.log('Activity logging:', { userId, title, description, type });
+    console.log('Activity logging:', {userId, title, description, type});
   }
 }

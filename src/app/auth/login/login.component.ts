@@ -1,63 +1,63 @@
 // src/app/components/login/login.component.ts
-import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import { Router, ActivatedRoute, RouterLink } from '@angular/router';
-import { CommonModule } from '@angular/common';
-import {AuthService} from "../../register/auth.service";
+import {Component, OnInit} from '@angular/core';
+import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
+import {ActivatedRoute, Router, RouterLink} from '@angular/router';
+import {CommonModule} from '@angular/common';
+import {AuthService} from '../auth.service';
 
 @Component({
-    selector: 'app-login',
-    standalone: true,
-    imports: [
-        CommonModule,
-        ReactiveFormsModule,
-        RouterLink
-    ],
-    template: `
-        <div class="login-container">
-            <div class="card">
-                <h2 class="card-header">Login</h2>
-                <div class="card-body">
-                    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
-                        <div class="form-group">
-                            <label for="email">Email</label>
-                            <input
-                                    type="email"
-                                    formControlName="email"
-                                    class="form-control"
-                                    [ngClass]="{ 'is-invalid': submitted && f['email'].errors }"
-                            />
-                            <div *ngIf="submitted && f['email'].errors" class="invalid-feedback">
-                                <div *ngIf="f['email'].errors?.['required']">Email is required</div>
-                                <div *ngIf="f['email'].errors?.['email']">Enter a valid email address</div>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="password">Password</label>
-                            <input
-                                    type="password"
-                                    formControlName="password"
-                                    class="form-control"
-                                    [ngClass]="{ 'is-invalid': submitted && f['password'].errors }"
-                            />
-                            <div *ngIf="submitted && f['password'].errors" class="invalid-feedback">
-                                <div *ngIf="f['password'].errors['required']">Password is required</div>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <button [disabled]="loading" class="btn btn-primary">
-                                <span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>
-                                Login
-                            </button>
-                            <a routerLink="/register" class="btn btn-link">Register</a>
-                        </div>
-                        <div *ngIf="error" class="alert alert-danger mt-3">{{ error }}</div>
-                    </form>
-                </div>
+  selector: 'app-login',
+  standalone: true,
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    RouterLink
+  ],
+  template: `
+    <div class="login-container">
+      <div class="card">
+        <h2 class="card-header">Login</h2>
+        <div class="card-body">
+          <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+            <div class="form-group">
+              <label for="email">Email</label>
+              <input
+                type="email"
+                formControlName="email"
+                class="form-control"
+                [ngClass]="{ 'is-invalid': submitted && f['email'].errors }"
+              />
+              <div *ngIf="submitted && f['email'].errors" class="invalid-feedback">
+                <div *ngIf="f['email'].errors?.['required']">Email is required</div>
+                <div *ngIf="f['email'].errors?.['email']">Enter a valid email address</div>
+              </div>
             </div>
+            <div class="form-group">
+              <label for="password">Password</label>
+              <input
+                type="password"
+                formControlName="password"
+                class="form-control"
+                [ngClass]="{ 'is-invalid': submitted && f['password'].errors }"
+              />
+              <div *ngIf="submitted && f['password'].errors" class="invalid-feedback">
+                <div *ngIf="f['password'].errors?.['required']">Password is required</div>
+              </div>
+            </div>
+            <div class="form-group">
+              <button [disabled]="loading" class="btn btn-primary">
+                <span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>
+                Login
+              </button>
+              <a routerLink="/register" class="btn btn-link">Register</a>
+            </div>
+            <div *ngIf="error" class="alert alert-danger mt-3">{{ error }}</div>
+          </form>
         </div>
-    `,
-    styles: [`
+      </div>
+    </div>
+  `,
+  styles: [`
     .login-container {
       max-width: 400px;
       margin: 0 auto;
@@ -67,7 +67,7 @@ import {AuthService} from "../../register/auth.service";
     .card {
       border: 1px solid #ddd;
       border-radius: 4px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     }
 
     .card-header {
@@ -157,7 +157,9 @@ import {AuthService} from "../../register/auth.service";
     }
 
     @keyframes spinner-border {
-      to { transform: rotate(360deg); }
+      to {
+        transform: rotate(360deg);
+      }
     }
 
     .mr-1 {
@@ -170,59 +172,61 @@ import {AuthService} from "../../register/auth.service";
   `]
 })
 export class LoginComponent implements OnInit {
-    loginForm: FormGroup;
-    loading = false;
-    submitted = false;
-    error = '';
-    returnUrl: string;
+  loginForm: FormGroup;
+  loading = false;
+  submitted = false;
+  error = '';
+  returnUrl: string;
 
-    constructor(
-        private formBuilder: FormBuilder,
-        private router: Router,
-        private route: ActivatedRoute,
-        private authService: AuthService
-    ) {
-        this.loginForm = this.formBuilder.group({
-            email: ['', [Validators.required, Validators.email]],
-            password: ['', Validators.required]
-        });
+  constructor(
+    private formBuilder: FormBuilder,
+    private router: Router,
+    private route: ActivatedRoute,
+    private authService: AuthService
+  ) {
+    this.loginForm = this.formBuilder.group({
+      email: ['', [Validators.required, Validators.email]],
+      password: ['', Validators.required]
+    });
 
-        // Get return url from route parameters or default to '/'
-        this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
+    // Get return url from route parameters or default to '/'
+    this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
+  }
+
+  // Convenience getter for easy access to form fields
+  get f() {
+    return this.loginForm.controls;
+  }
+
+  ngOnInit(): void {
+    // Redirect if already logged in
+    if (this.authService.isAuthenticated()) {
+      this.router.navigate(['/profile']);
+    }
+  }
+
+  onSubmit(): void {
+    this.submitted = true;
+
+    // Stop here if form is invalid
+    if (this.loginForm.invalid) {
+      return;
     }
 
-    ngOnInit(): void {
-        // Redirect if already logged in
-        if (this.authService.isAuthenticated()) {
-            this.router.navigate(['/profile']);
+    this.loading = true;
+    this.authService.login(this.f['email'].value, this.f['password'].value)
+      .then((success: any) => {
+        if (success) {
+          this.router.navigate([this.returnUrl]);
+        } else {
+          this.error = 'Login failed. Please check your credentials.';
+          this.loading = false;
         }
-    }
-
-    // Convenience getter for easy access to form fields
-    get f() { return this.loginForm.controls; }
-
-    onSubmit(): void {
-        this.submitted = true;
-
-        // Stop here if form is invalid
-        if (this.loginForm.invalid) {
-            return;
-        }
-
-        this.loading = true;
-        this.authService.login(this.f['email'].value, this.f['password'].value)
-            .then((success:any) => {
-                if (success) {
-                    this.router.navigate([this.returnUrl]);
-                } else {
-                    this.error = 'Login failed. Please check your credentials.';
-                    this.loading = false;
-                }
-            })
-            .catch((err: any) => {
-                // Handle specific errors from your auth service
-                this.error = err.message || 'An unexpected error occurred';
-                this.loading = false;
-            });
-    }
+      })
+      .catch((err: any) => {
+        // Handle specific errors from your auth service
+        this.error = err.message || 'An unexpected error occurred';
+        this.loading = false;
+      });
+  }
 }

@@ -1,9 +1,9 @@
 // components/group-selector.component.ts - Enhanced version
-import { Component, Input, Output, EventEmitter } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { BibleTrackerService } from '../bible-tracker-service';
-import { BIBLE_DATA } from '../models';
-import { ConfirmationModalComponent } from "./confirmation-modal";
+import {Component, EventEmitter, Input, Output} from '@angular/core';
+import {CommonModule} from '@angular/common';
+import {BibleTrackerService} from '../bible-tracker-service';
+import {BIBLE_DATA} from '../models';
+import {ConfirmationModalComponent} from '../../shared/components/notification/confirmation-modal';
 
 @Component({
   selector: 'app-group-selector',
@@ -15,11 +15,11 @@ import { ConfirmationModalComponent } from "./confirmation-modal";
 
       <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
         <button
-            *ngFor="let group of availableGroups"
-            (click)="selectGroup(group)"
-            class="group-card"
-            [class.active]="selectedGroup === group"
-            [ngClass]="{
+          *ngFor="let group of availableGroups"
+          (click)="selectGroup(group)"
+          class="group-card"
+          [class.active]="selectedGroup === group"
+          [ngClass]="{
               'testament-old': selectedTestament === 'Old Testament',
               'testament-new': selectedTestament === 'New Testament'
             }"
@@ -38,12 +38,12 @@ import { ConfirmationModalComponent } from "./confirmation-modal";
 
             <div class="progress-container">
               <div
-                  class="progress-bar"
-                  [ngClass]="{
+                class="progress-bar"
+                [ngClass]="{
                     'bg-amber-500': selectedTestament === 'Old Testament',
                     'bg-indigo-500': selectedTestament === 'New Testament'
                   }"
-                  [style.width.%]="getGroupStats(group).percentComplete"
+                [style.width.%]="getGroupStats(group).percentComplete"
               ></div>
             </div>
 
@@ -52,7 +52,8 @@ import { ConfirmationModalComponent } from "./confirmation-modal";
                 <span class="text-xs font-medium">{{ getGroupBookCount(group) }} Books</span>
               </div>
               <div class="stats-text text-xs">
-                <span>{{ getGroupStats(group).completedChapters }}/{{ getGroupStats(group).totalChapters }} Chapters</span>
+                <span>{{ getGroupStats(group).completedChapters }}/{{ getGroupStats(group).totalChapters }}
+                  Chapters</span>
                 <span class="mx-1">•</span>
                 <span>{{ getGroupTotalVerses(group) }} Verses</span>
               </div>
@@ -85,8 +86,8 @@ import { ConfirmationModalComponent } from "./confirmation-modal";
 
       <div class="mt-4 text-right">
         <button
-            (click)="showConfirmModal()"
-            class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm transition-colors duration-200"
+          (click)="showConfirmModal()"
+          class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm transition-colors duration-200"
         >
           Reset {{ selectedGroup }}
         </button>
@@ -95,12 +96,12 @@ import { ConfirmationModalComponent } from "./confirmation-modal";
 
     <!-- Confirmation Modal -->
     <app-confirmation-modal
-        [isVisible]="isConfirmModalVisible"
-        [title]="'Reset Book Group'"
-        [message]="'Are you sure you want to reset all progress for ' + selectedGroup + ' books? This action cannot be undone.'"
-        [confirmText]="'Reset'"
-        (confirm)="confirmReset()"
-        (cancel)="cancelReset()"
+      [isVisible]="isConfirmModalVisible"
+      [title]="'Reset Book Group'"
+      [message]="'Are you sure you want to reset all progress for ' + selectedGroup + ' books? This action cannot be undone.'"
+      [confirmText]="'Reset'"
+      (confirm)="confirmReset()"
+      (cancel)="cancelReset()"
     ></app-confirmation-modal>
   `,
   styles: [`
@@ -253,7 +254,8 @@ export class GroupSelectorComponent {
 
   isConfirmModalVisible: boolean = false;
 
-  constructor(private bibleTrackerService: BibleTrackerService) {}
+  constructor(private bibleTrackerService: BibleTrackerService) {
+  }
 
   selectGroup(group: string): void {
     this.groupChange.emit(group);
@@ -278,22 +280,22 @@ export class GroupSelectorComponent {
 
   getGroupBookCount(group: string): number {
     return Object.values(BIBLE_DATA)
-        .filter(book => book.group === group)
-        .length;
+      .filter(book => book.group === group)
+      .length;
   }
 
   getGroupTotalVerses(group: string): number {
     return Object.values(BIBLE_DATA)
-        .filter(book => book.group === group)
-        .reduce((sum, book) => sum + book.totalVerses, 0);
+      .filter(book => book.group === group)
+      .reduce((sum, book) => sum + book.totalVerses, 0);
   }
 
   getTopBooksInGroup(group: string, count: number): string[] {
     return Object.entries(BIBLE_DATA)
-        .filter(([_, book]) => book.group === group)
-        .sort((a, b) => a[1].order - b[1].order)
-        .slice(0, count)
-        .map(([name, _]) => name);
+      .filter(([_, book]) => book.group === group)
+      .sort((a, b) => a[1].order - b[1].order)
+      .slice(0, count)
+      .map(([name, _]) => name);
   }
 
   // Shorten book names for chips display

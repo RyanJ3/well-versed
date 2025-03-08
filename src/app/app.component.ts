@@ -1,12 +1,11 @@
 // src/app/app.component.ts
-import { Component } from '@angular/core';
-import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
-import { CommonModule } from '@angular/common';
-import {AuthService} from './register/auth.service';
+import {Component} from '@angular/core';
+import {RouterLink, RouterLinkActive, RouterOutlet} from '@angular/router';
+import {CommonModule} from '@angular/common';
+import {AuthService} from './auth/auth.service';
 
 @Component({
   selector: 'app-root',
-  standalone: true,
   imports: [RouterOutlet, RouterLink, CommonModule, RouterLinkActive],
   template: `
     <div class="app-container">
@@ -24,8 +23,9 @@ import {AuthService} from './register/auth.service';
         </button>
 
         <nav class="app-nav" [class.active]="menuActive">
-          <a routerLink="/" class="nav-link" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" (click)="closeMenu()">Home</a>
-          <a routerLink="/flow-memorization" class="nav-link" routerLinkActive="active" (click)="closeMenu()">FLOW Memorization</a>
+          <a routerLink="/" class="nav-link" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}"
+             (click)="closeMenu()">Home</a>
+          <a routerLink="/flow" class="nav-link" routerLinkActive="active" (click)="closeMenu()">FLOW Memorization</a>
           <a routerLink="/stats" class="nav-link" routerLinkActive="active" (click)="closeMenu()">Stats</a>
 
           <!-- Authentication Links -->
@@ -45,7 +45,7 @@ import {AuthService} from './register/auth.service';
       </main>
 
       <footer class="app-footer">
-<!--        <p>&copy; 2025 TODO WellVersed App. All rights reserved.</p>-->
+        <!--        <p>&copy; 2025 TODO WellVersed App. All rights reserved.</p>-->
       </footer>
     </div>
   `,
@@ -191,11 +191,11 @@ import {AuthService} from './register/auth.service';
   `]
 })
 export class AppComponent {
-  // TODO change to WellVersed
-  title = 'Bible App';
+  title = 'Well Versed';
   menuActive = false;
 
-  constructor(public authService: AuthService) {}
+  constructor(public authService: AuthService) {
+  }
 
   toggleMenu(): void {
     this.menuActive = !this.menuActive;

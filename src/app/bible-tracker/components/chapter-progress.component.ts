@@ -1,9 +1,9 @@
 // components/chapter-progress.component.ts
-import { Component, Input, Output, EventEmitter } from '@angular/core';
-import { BibleBook, ChapterProgress } from '../models';
-import { CommonModule } from '@angular/common';
-import { VerseSelectorComponent } from './verse-selector.component';
-import {ConfirmationModalComponent} from './confirmation-modal';
+import {Component, EventEmitter, Input, Output} from '@angular/core';
+import {BibleBook, ChapterProgress} from '../models';
+import {CommonModule} from '@angular/common';
+import {VerseSelectorComponent} from './verse-selector.component';
+import {ConfirmationModalComponent} from '../../shared/components/notification/confirmation-modal';
 
 @Component({
   selector: 'app-chapter-progress',
@@ -11,7 +11,6 @@ import {ConfirmationModalComponent} from './confirmation-modal';
   imports: [
     CommonModule,
     VerseSelectorComponent,
-    ConfirmationModalComponent,
     ConfirmationModalComponent
   ],
   template: `
@@ -65,46 +64,7 @@ import {ConfirmationModalComponent} from './confirmation-modal';
       (cancel)="cancelReset()"
     ></app-confirmation-modal>
   `,
-  styles: [`
-    .action-button {
-      padding: 0.5rem 1rem;
-      border-radius: 0.375rem;
-      font-size: 0.875rem;
-      font-weight: 500;
-      transition: all 0.2s ease;
-    }
-
-    .action-button.primary {
-      background-color: rgba(59, 130, 246, 1);
-      color: white;
-    }
-
-    .action-button.primary:hover {
-      background-color: rgba(37, 99, 235, 1);
-    }
-
-    .action-button.secondary {
-      background-color: rgba(156, 163, 175, 1);
-      color: white;
-    }
-
-    .action-button.secondary:hover {
-      background-color: rgba(107, 114, 128, 1);
-    }
-
-    .action-button.danger {
-      background-color: rgba(239, 68, 68, 1);
-      color: white;
-    }
-
-    .action-button.danger:hover {
-      background-color: rgba(220, 38, 38, 1);
-    }
-
-    .mr-2 {
-      margin-right: 0.5rem;
-    }
-  `]
+  styles: []
 })
 export class ChapterProgressComponent {
   @Input() currentBook: BibleBook | null = null;
@@ -135,14 +95,6 @@ export class ChapterProgressComponent {
     return Math.round((this.memorizedCount / this.totalVerses) * 100);
   }
 
-  incrementVerses(): void {
-    this.incrementVersesEvent.emit();
-  }
-
-  decrementVerses(): void {
-    this.decrementVersesEvent.emit();
-  }
-
   onVersesChange(versesMemorized: boolean[]): void {
     // Convert boolean array to list of verse numbers for API compatibility
     const selectedVerses = versesMemorized
@@ -150,10 +102,6 @@ export class ChapterProgressComponent {
       .filter(v => v !== null) as number[];
 
     this.updateProgress.emit(selectedVerses);
-  }
-
-  showConfirmModal(): void {
-    this.isConfirmModalVisible = true;
   }
 
   confirmReset(): void {
