@@ -36,7 +36,8 @@ import {AuthService} from './auth/auth.service';
             </button>
 
             <div class="dropdown-menu" [class.active]="memorizeMenuActive">
-              <a routerLink="/flow" class="dropdown-item" routerLinkActive="active" (click)="closeMenu()">FLOW Memorization</a>
+              <a routerLink="/flow" class="dropdown-item" routerLinkActive="active" (click)="closeMenu()">FLOW</a>
+              <a routerLink="/flashcard" class="dropdown-item" routerLinkActive="active" (click)="closeMenu()">Flashcard</a>
               <!-- Add other memorization tools here in the future -->
             </div>
           </div>
