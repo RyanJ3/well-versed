@@ -3,8 +3,9 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
-import { UserService, Activity } from '../../services/user.service';
-import { AuthService, User } from '../../../auth/auth.service';
+import {Activity, UserService} from '../shared/services/user.service';
+import {User} from './user.model';
+import {AuthService} from './auth.service';
 
 @Component({
   selector: 'app-profile',
@@ -432,6 +433,9 @@ export class ProfileComponent implements OnInit {
       // Using our error handler to handle potential errors during update
       try {
         localStorage.setItem('currentUser', JSON.stringify(updatedUser));
+
+        // Update current user in auth service
+        this.authService.currentUserSubject.next(updatedUser);
 
         this.updateMessage = 'Profile updated successfully';
         this.updateSuccess = true;

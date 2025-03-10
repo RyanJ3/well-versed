@@ -1,9 +1,10 @@
-// src/app/components/login/login.component.ts
+// src/app/auth/login/login.component.ts
 import {Component, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
 import {ActivatedRoute, Router, RouterLink} from '@angular/router';
 import {CommonModule} from '@angular/common';
 import {AuthService} from '../auth.service';
+import {ErrorHandlerService} from '../handlers/error-handler.service';
 
 @Component({
   selector: 'app-login',
@@ -182,7 +183,8 @@ export class LoginComponent implements OnInit {
     private formBuilder: FormBuilder,
     private router: Router,
     private route: ActivatedRoute,
-    private authService: AuthService
+    private authService: AuthService,
+    private errorHandler: ErrorHandlerService
   ) {
     this.loginForm = this.formBuilder.group({
       email: ['', [Validators.required, Validators.email]],
@@ -207,6 +209,7 @@ export class LoginComponent implements OnInit {
 
   onSubmit(): void {
     this.submitted = true;
+    this.error = ''; // Clear previous errors
 
     // Stop here if form is invalid
     if (this.loginForm.invalid) {
@@ -219,14 +222,75 @@ export class LoginComponent implements OnInit {
         if (success) {
           this.router.navigate([this.returnUrl]);
         } else {
+          // Using error handler service for failed login
+          this.errorHandler.showErrorModal({
+            title: 'Login Failed',
+            message: 'We couldn\'t log you in with those credentials. Please try again.',
+            showRetry: true,
+            retryCallback: () => this.retryLogin()
+          });
           this.error = 'Login failed. Please check your credentials.';
           this.loading = false;
         }
       })
       .catch((err: any) => {
-        // Handle specific errors from your auth service
+        // Let the error handler service handle the error
+        if (err.code && err.code.startsWith('auth/')) {
+          // This is an auth-specific error
+          this.handleAuthError(err);
+        } else {
+          // This is a general error
+          this.errorHandler.showErrorModal({
+            title: 'Login Error',
+            message: 'An error occurred during login.',
+            details: err.message || 'Unknown error',
+            showRetry: true,
+            retryCallback: () => this.retryLogin()
+          });
+        }
+
+        // Still show the error in the form
         this.error = err.message || 'An unexpected error occurred';
         this.loading = false;
       });
+  }
+
+  // Helper method to handle auth-specific errors
+  private handleAuthError(error: any): void {
+    let message = 'Authentication failed.';
+
+    switch (error.code) {
+      case 'auth/user-not-found':
+      case 'auth/wrong-password':
+        message = 'Invalid email or password. Please try again.';
+        break;
+      case 'auth/invalid-email':
+        message = 'The email address format is invalid.';
+        break;
+      case 'auth/user-disabled':
+        message = 'This account has been disabled.';
+        break;
+      case 'auth/too-many-requests':
+        message = 'Too many failed login attempts. Please try again later.';
+        break;
+      default:
+        message = error.message || 'An unexpected authentication error occurred.';
+    }
+
+    this.error = message;
+
+    this.errorHandler.showErrorModal({
+      title: 'Authentication Error',
+      message: message,
+      showRetry: true,
+      retryCallback: () => this.retryLogin()
+    });
+  }
+
+  // Retry login after error
+  retryLogin(): void {
+    if (this.loginForm.valid) {
+      this.onSubmit();
+    }
   }
 }

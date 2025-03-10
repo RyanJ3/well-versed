@@ -1,9 +1,23 @@
-// src/app/components/register/register.component.ts
-import {Component, OnInit} from '@angular/core';
-import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
-import {Router, RouterLink} from '@angular/router';
-import {CommonModule} from '@angular/common';
+// src/app/auth/register/register.component.ts
+import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators, AbstractControl, ValidatorFn } from '@angular/forms';
+import { Router, RouterLink } from '@angular/router';
+import { CommonModule } from '@angular/common';
 import {AuthService} from '../auth.service';
+import {NonNullAssert} from '@angular/compiler';
+import {ErrorHandlerService} from '../handlers/error-handler.service';
+
+// Password match validator function - moved outside the component
+export const passwordMatchValidator: ValidatorFn = (formGroup: AbstractControl) => {
+  const password = formGroup.get('password')?.value;
+  const confirmPassword = formGroup.get('confirmPassword')?.value;
+
+  if (password !== confirmPassword) {
+    formGroup.get('confirmPassword')?.setErrors({ matching: true });
+    return { passwordMismatch: true };
+  }
+  return null;
+};
 
 @Component({
   selector: 'app-register',
@@ -236,7 +250,8 @@ export class RegisterComponent implements OnInit {
   constructor(
     private formBuilder: FormBuilder,
     private router: Router,
-    private authService: AuthService
+    private authService: AuthService,
+    private errorHandler: ErrorHandlerService
   ) {
     this.registerForm = this.formBuilder.group({
       name: ['', Validators.required],
@@ -245,7 +260,7 @@ export class RegisterComponent implements OnInit {
       password: ['', [Validators.required, Validators.minLength(6)]],
       confirmPassword: ['', Validators.required]
     }, {
-      validators: this.passwordMatchValidator
+      validators: passwordMatchValidator
     });
   }
 
@@ -261,20 +276,9 @@ export class RegisterComponent implements OnInit {
     }
   }
 
-  // Custom validator for password matching
-  passwordMatchValidator(formGroup: FormGroup) {
-    const password = formGroup.get('password')?.value;
-    const confirmPassword = formGroup.get('confirmPassword')?.value;
-
-    if (password !== confirmPassword) {
-      formGroup.get('confirmPassword')?.setErrors({matching: true});
-      return true;
-    }
-    return false
-  }
-
   onSubmit(): void {
     this.submitted = true;
+    this.error = ''; // Clear previous errors
 
     // Stop here if form is invalid
     if (this.registerForm.invalid) {
@@ -292,18 +296,71 @@ export class RegisterComponent implements OnInit {
         if (success) {
           this.router.navigate(['/login'], {queryParams: {registered: true}});
         } else {
+          // Using error handler for failed registration
+          this.errorHandler.showErrorModal({
+            title: 'Registration Failed',
+            message: 'We couldn\'t create your account. Please try again.',
+            showRetry: true,
+            retryCallback: () => this.retryRegistration()
+          });
+
           this.error = 'Registration failed. Please try again.';
           this.loading = false;
         }
       })
       .catch((err: any) => {
         // Handle specific errors
-        if (err.code === 'auth/email-already-in-use') {
-          this.error = 'This email address is already in use.';
+        if (err.code && err.code.startsWith('auth/')) {
+          this.handleAuthError(err);
         } else {
-          this.error = err.message || 'An unexpected error occurred';
+          // General error handling
+          this.errorHandler.showErrorModal({
+            title: 'Registration Error',
+            message: 'An error occurred during registration.',
+            details: err.message || 'Unknown error',
+            showRetry: true,
+            retryCallback: () => this.retryRegistration()
+          });
         }
+
+        this.error = err.message || 'An unexpected error occurred';
         this.loading = false;
       });
   }
+
+  // Helper method to handle auth-specific errors
+  private handleAuthError(error: any): void {
+    let message = 'Registration failed.';
+
+    switch (error.code) {
+      case 'auth/email-already-in-use':
+        message = 'This email address is already in use.';
+        break;
+      case 'auth/invalid-email':
+        message = 'The email address format is invalid.';
+        break;
+      case 'auth/weak-password':
+        message = 'The password is too weak. Please use at least 6 characters.';
+        break;
+      default:
+        message = error.message || 'An unexpected authentication error occurred.';
+    }
+
+    this.error = message;
+
+    this.errorHandler.showErrorModal({
+      title: 'Registration Error',
+      message: message,
+      showRetry: true,
+      retryCallback: () => this.retryRegistration()
+    });
+  }
+
+  // Retry registration after error
+  retryRegistration(): void {
+    if (this.registerForm.valid) {
+      this.onSubmit();
+    }
+  }
+
 }
