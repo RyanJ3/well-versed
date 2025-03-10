@@ -2,7 +2,6 @@
 import {Component} from '@angular/core';
 import {RouterLink, RouterLinkActive, RouterOutlet} from '@angular/router';
 import {CommonModule} from '@angular/common';
-import {AuthService} from './auth/auth.service';
 
 @Component({
   selector: 'app-root',
@@ -53,16 +52,6 @@ import {AuthService} from './auth/auth.service';
 
           <div class="user-menu" [class.active]="userMenuActive">
             <a routerLink="/stats" class="user-menu-item" routerLinkActive="active" (click)="closeUserMenu()">Stats</a>
-
-            <!-- Authentication Links -->
-            <ng-container *ngIf="!authService.isAuthenticated()">
-              <a routerLink="/login" class="user-menu-item" routerLinkActive="active" (click)="closeUserMenu()">Login</a>
-              <a routerLink="/register" class="user-menu-item" routerLinkActive="active" (click)="closeUserMenu()">Register</a>
-            </ng-container>
-            <ng-container *ngIf="authService.isAuthenticated()">
-              <a routerLink="/profile" class="user-menu-item" routerLinkActive="active" (click)="closeUserMenu()">Profile</a>
-              <a (click)="logout(); closeUserMenu()" class="user-menu-item">Logout</a>
-            </ng-container>
           </div>
         </div>
       </header>
@@ -396,7 +385,7 @@ export class AppComponent {
   userMenuActive = false;
   memorizeMenuActive = false;
 
-  constructor(public authService: AuthService) {
+  constructor() {
   }
 
   toggleMenu(): void {
@@ -431,7 +420,4 @@ export class AppComponent {
     this.memorizeMenuActive = false;
   }
 
-  logout(): void {
-    this.authService.logout();
-  }
 }
