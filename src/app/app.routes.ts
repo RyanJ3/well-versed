@@ -8,6 +8,7 @@ import {AuthGuard} from './auth/auth.guard';
 import {FlowMemorizationComponent} from './memorization/flow/flow-memorization.component';
 import {FlashcardComponent} from './memorization/flashcard/flashcard.component';
 import {PageNotFoundComponent} from './auth/page-not-found/page-not-found.component';
+import {AlertTestComponent} from './auth/alert.test';
 export const routes: Routes = [
   {path: '', component: BibleTrackerComponent},  // Home page
   {path: 'login', component: LoginComponent},
@@ -21,5 +22,6 @@ export const routes: Routes = [
   {path: 'flow', component: FlowMemorizationComponent},  // FLOW memorization tool route
   {path: 'flashcard', component: FlashcardComponent},  // Flashcard memorization tool
   {path: 'not-found', component: PageNotFoundComponent},  // Explicit 404 page route
-  {path: '**', component: PageNotFoundComponent}  // Catch all other routes and show 404 page
+  {path: '**', component: PageNotFoundComponent},  // Catch all other routes and show 404 page
+  {path: 'test', component: AlertTestComponent}
 ];

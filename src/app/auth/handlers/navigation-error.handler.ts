@@ -1,8 +1,8 @@
-// src/app/core/handlers/navigation-error.handler.ts
+// src/app/auth/handlers/navigation-error.handler.ts
 import { Injectable } from '@angular/core';
 import { Router, NavigationError, Event } from '@angular/router';
 import { filter } from 'rxjs/operators';
-import {ErrorHandlerService} from './error-handler.service';
+import {AlertService} from './alert.service';
 
 @Injectable({
   providedIn: 'root'
@@ -10,7 +10,7 @@ import {ErrorHandlerService} from './error-handler.service';
 export class NavigationErrorHandler {
   constructor(
     private router: Router,
-    private errorHandlerService: ErrorHandlerService
+    private alertService: AlertService
   ) {
     // Subscribe to router events to catch navigation errors
     this.router.events.pipe(
@@ -25,16 +25,18 @@ export class NavigationErrorHandler {
 
     // Handle 404-like navigation errors
     if (error.url && this.isResourceNotFoundError(error)) {
-      this.errorHandlerService.redirectTo404();
+      this.alertService.redirectTo404();
       return;
     }
 
     // Handle other navigation errors
-    this.errorHandlerService.showErrorModal({
-      title: 'Navigation Error',
-      message: 'We couldn\'t navigate to the requested page.',
-      details: error.error?.message || 'Unknown navigation error'
-    });
+    this.alertService.showError(
+      'We couldn\'t navigate to the requested page.',
+      'Navigation Error',
+      {
+        details: error.error?.message || 'Unknown navigation error'
+      }
+    );
   }
 
   private isResourceNotFoundError(error: NavigationError): boolean {

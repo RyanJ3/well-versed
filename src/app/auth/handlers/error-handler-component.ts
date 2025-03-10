@@ -2,7 +2,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Subscription } from 'rxjs';
-import { ErrorModalComponent } from './error.modal';
+import { ErrorModalComponent } from './alert-modal.component';
 import {ErrorHandlerService} from './error-handler.service';
 
 @Component({
