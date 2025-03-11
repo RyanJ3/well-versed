@@ -1,0 +1,57 @@
+<div class="app-container">
+  <header class="app-header">
+    <div class="logo-container">
+      <h1 class="app-title">
+        <span class="app-title-text">Well Versed</span>
+      </h1>
+    </div>
+
+    <button class="menu-toggle" (click)="toggleMenu()">
+      <span class="bar"></span>
+      <span class="bar"></span>
+      <span class="bar"></span>
+    </button>
+
+    <nav class="app-nav" [class.active]="menuActive">
+      <a routerLink="/" class="nav-link" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}"
+         (click)="closeMenu()">Home</a>
+
+      <!-- Memorize dropdown menu -->
+      <div class="nav-dropdown">
+        <button class="nav-link dropdown-toggle" [class.active]="memorizeMenuActive" (click)="toggleMemorizeMenu($event)">
+          Memorize
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="dropdown-icon" [class.rotate]="memorizeMenuActive">
+            <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
+          </svg>
+        </button>
+
+        <div class="dropdown-menu" [class.active]="memorizeMenuActive">
+          <a routerLink="/flow" class="dropdown-item" routerLinkActive="active" (click)="closeMenu()">FLOW</a>
+          <a routerLink="/flashcard" class="dropdown-item" routerLinkActive="active" (click)="closeMenu()">Flashcard</a>
+          <!-- Add other memorization tools here in the future -->
+        </div>
+      </div>
+    </nav>
+
+    <!-- User menu with icon -->
+    <div class="user-menu-container">
+      <button class="user-icon-button" (click)="toggleUserMenu()">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="user-icon">
+          <path fill-rule="evenodd" d="M18.685 19.097A9.723 9.723 0 0021.75 12c0-5.385-4.365-9.75-9.75-9.75S2.25 6.615 2.25 12a9.723 9.723 0 003.065 7.097A9.716 9.716 0 0012 21.75a9.716 9.716 0 006.685-2.653zm-12.54-1.285A7.486 7.486 0 0112 15a7.486 7.486 0 015.855 2.812A8.224 8.224 0 0112 20.25a8.224 8.224 0 01-5.855-2.438zM15.75 9a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z" clip-rule="evenodd" />
+        </svg>
+      </button>
+
+      <div class="user-menu" [class.active]="userMenuActive">
+        <a routerLink="/stats" class="user-menu-item" routerLinkActive="active" (click)="closeUserMenu()">Stats</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="app-content">
+    <router-outlet></router-outlet>
+  </main>
+
+  <footer class="app-footer">
+    <!--        <p>&copy; 2025 TODO WellVersed App. All rights reserved.</p>-->
+  </footer>
+</div>
