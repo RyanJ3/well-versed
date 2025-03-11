@@ -6,7 +6,6 @@ import { HttpClientModule } from '@angular/common/http';
 
 import { AppComponent } from './app.component';
 import { BibleTrackerModule } from './bible-tracker/bible-tracker.module';
-import { EsvApiService } from './shared/services/esv-api.service';
 
 @NgModule({
   declarations: [
@@ -19,7 +18,6 @@ import { EsvApiService } from './shared/services/esv-api.service';
     BibleTrackerModule,
   ],
   providers: [
-    EsvApiService
   ],
   bootstrap: [AppComponent]
 })
