@@ -1,21 +1,45 @@
 // src/app/app.component.ts
-import {Component} from '@angular/core';
-import {RouterLink, RouterLinkActive, RouterOutlet} from '@angular/router';
-import {CommonModule} from '@angular/common';
+import { Component, OnInit } from '@angular/core';
+import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { CommonModule } from '@angular/common';
+import { OidcSecurityService } from 'angular-auth-oidc-client';
+import { AuthComponent } from './auth/auth.component';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, RouterLink, CommonModule, RouterLinkActive],
+  standalone: true,
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, CommonModule, AuthComponent],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
   title = 'Well Versed';
   menuActive = false;
   userMenuActive = false;
   memorizeMenuActive = false;
 
-  constructor() {
+  // Auth-related properties (used in template)
+  isAuthenticated = false;
+  userData$ ;
+
+  constructor(private oidcSecurityService: OidcSecurityService) {
+    this.userData$ = {}
+  }
+
+  ngOnInit(): void {
+    // Check authentication status on app initialization
+    this.oidcSecurityService.checkAuth().subscribe(({ isAuthenticated }) => {
+      console.log('App authentication status:', isAuthenticated);
+      this.isAuthenticated = isAuthenticated;
+    });
+
+    // Subscribe to authentication state changes
+    this.oidcSecurityService.isAuthenticated$.subscribe(
+      ({ isAuthenticated }) => {
+        this.isAuthenticated = isAuthenticated;
+      }
+    );
+    this.userData$ = this.oidcSecurityService.userData$
   }
 
   toggleMenu(): void {
@@ -50,4 +74,14 @@ export class AppComponent {
     this.memorizeMenuActive = false;
   }
 
+  // Auth methods
+  login(): void {
+    this.oidcSecurityService.authorize();
+  }
+
+  logout(): void {
+    this.oidcSecurityService.logoffAndRevokeTokens().subscribe(result => {
+      console.log('Logged out', result);
+    });
+  }
 }
