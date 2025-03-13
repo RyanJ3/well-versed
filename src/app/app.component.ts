@@ -1,14 +1,13 @@
 // src/app/app.component.ts
 import { Component, OnInit } from '@angular/core';
-import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { RouterLink, RouterLinkActive, RouterOutlet, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { OidcSecurityService } from 'angular-auth-oidc-client';
-import { AuthComponent } from './auth/auth.component';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, RouterLink, RouterLinkActive, CommonModule, AuthComponent],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, CommonModule],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
@@ -18,19 +17,26 @@ export class AppComponent implements OnInit {
   userMenuActive = false;
   memorizeMenuActive = false;
 
-  // Auth-related properties (used in template)
+  // Auth-related properties
   isAuthenticated = false;
-  userData$ ;
+  userData: any = null;
 
-  constructor(private oidcSecurityService: OidcSecurityService) {
-    this.userData$ = {}
-  }
+  constructor(
+    private oidcSecurityService: OidcSecurityService,
+    private router: Router
+  ) {}
 
   ngOnInit(): void {
     // Check authentication status on app initialization
-    this.oidcSecurityService.checkAuth().subscribe(({ isAuthenticated }) => {
+    this.oidcSecurityService.checkAuth().subscribe(({ isAuthenticated, userData }) => {
       console.log('App authentication status:', isAuthenticated);
       this.isAuthenticated = isAuthenticated;
+      this.userData = userData;
+
+      // If already authenticated and on root path, redirect to home
+      if (isAuthenticated && (window.location.pathname === '/' || window.location.pathname === '/landing')) {
+        this.router.navigate(['/home']);
+      }
     });
 
     // Subscribe to authentication state changes
@@ -39,7 +45,11 @@ export class AppComponent implements OnInit {
         this.isAuthenticated = isAuthenticated;
       }
     );
-    this.userData$ = this.oidcSecurityService.userData$
+
+    // Subscribe to user data changes
+    this.oidcSecurityService.userData$.subscribe(userData => {
+      this.userData = userData;
+    });
   }
 
   toggleMenu(): void {
@@ -76,10 +86,17 @@ export class AppComponent implements OnInit {
 
   // Auth methods
   login(): void {
+    console.log('App component login button clicked');
     this.oidcSecurityService.authorize();
   }
 
   logout(): void {
+    console.log('App component logout button clicked');
+    // Clear session storage
+    if (window.sessionStorage) {
+      window.sessionStorage.clear();
+    }
+
     this.oidcSecurityService.logoffAndRevokeTokens().subscribe(result => {
       console.log('Logged out', result);
     });

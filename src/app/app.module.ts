@@ -17,15 +17,6 @@ import {AuthModule} from 'angular-auth-oidc-client';
     FormsModule,
     HttpClientModule,  // Make sure this is added
     BibleTrackerModule,
-    AuthModule.forRoot({
-      config: {
-        authority: 'https://cognito-idp.us-east-1.amazonaws.com/restoftheurl/',
-        redirectUrl: 'https://home',
-        clientId: 'test8',
-        scope: 'email openid phone',
-        responseType: 'code'
-      },
-    }),
   ],
   providers: [
   ],

@@ -5,15 +5,17 @@ import { FlowMemorizationComponent } from './memorization/flow/flow-memorization
 import { FlashcardComponent } from './memorization/flashcard/flashcard.component';
 import { authGuard } from './auth/auth.guard';
 import { HomeComponent } from './home/home.component';
-import {ErrorPageComponent} from './auth/error-page.component';
+import { ErrorPageComponent } from './auth/error-page.component';
 
 export const routes: Routes = [
-  // Public routes
-  { path: '', redirectTo: 'home', pathMatch: 'full' },
-  { path: 'home', component: HomeComponent, canActivate: [() => authGuard()]},
+  // Public routes - root path shows login page without a guard
+  { path: '', component: HomeComponent },
+  { path: 'landing', component: HomeComponent },
+
+  // Home route (protected, requires authentication)
+  { path: 'home', component: HomeComponent, canActivate: [() => authGuard()] },
 
   // Cognito authentication callback route
-  // This route is where users get redirected after logging in with Cognito
   { path: 'callback', component: HomeComponent },
 
   // Protected routes (require authentication)
