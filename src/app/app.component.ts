@@ -1,13 +1,12 @@
 // src/app/app.component.ts
-import { Component, OnInit } from '@angular/core';
-import { RouterLink, RouterLinkActive, RouterOutlet, Router } from '@angular/router';
-import { CommonModule } from '@angular/common';
-import { OidcSecurityService } from 'angular-auth-oidc-client';
+import {Component, inject, OnInit} from '@angular/core';
+import {RouterLink, RouterLinkActive, RouterOutlet} from '@angular/router';
+import {CommonModule} from '@angular/common';
+import {OidcSecurityService} from 'angular-auth-oidc-client';
 
 @Component({
   selector: 'app-root',
-  standalone: true,
-  imports: [RouterOutlet, RouterLink, RouterLinkActive, CommonModule],
+  imports: [RouterOutlet, RouterLink, CommonModule, RouterLinkActive],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
@@ -17,39 +16,25 @@ export class AppComponent implements OnInit {
   userMenuActive = false;
   memorizeMenuActive = false;
 
-  // Auth-related properties
-  isAuthenticated = false;
-  userData: any = null;
+  constructor() {
+  }
 
-  constructor(
-    private oidcSecurityService: OidcSecurityService,
-    private router: Router
-  ) {}
+  private readonly oidcSecurityService = inject(OidcSecurityService);
+
+  configuration$ = this.oidcSecurityService.getConfiguration();
+
+  userData$ = this.oidcSecurityService.userData$;
+
+  isAuthenticated = false;
 
   ngOnInit(): void {
-    // Check authentication status on app initialization
-    this.oidcSecurityService.checkAuth().subscribe(({ isAuthenticated, userData }) => {
-      console.log('App authentication status:', isAuthenticated);
-      this.isAuthenticated = isAuthenticated;
-      this.userData = userData;
-
-      // If already authenticated and on root path, redirect to home
-      if (isAuthenticated && (window.location.pathname === '/' || window.location.pathname === '/landing')) {
-        this.router.navigate(['/home']);
-      }
-    });
-
-    // Subscribe to authentication state changes
     this.oidcSecurityService.isAuthenticated$.subscribe(
       ({ isAuthenticated }) => {
         this.isAuthenticated = isAuthenticated;
+
+        console.warn('authenticated: ', isAuthenticated);
       }
     );
-
-    // Subscribe to user data changes
-    this.oidcSecurityService.userData$.subscribe(userData => {
-      this.userData = userData;
-    });
   }
 
   toggleMenu(): void {
@@ -83,22 +68,18 @@ export class AppComponent implements OnInit {
   closeMemorizeMenu(): void {
     this.memorizeMenuActive = false;
   }
-
-  // Auth methods
   login(): void {
-    console.log('App component login button clicked');
     this.oidcSecurityService.authorize();
   }
 
+  /**
+   * Logout the user
+   */
   logout(): void {
-    console.log('App component logout button clicked');
     // Clear session storage
     if (window.sessionStorage) {
       window.sessionStorage.clear();
     }
-
-    this.oidcSecurityService.logoffAndRevokeTokens().subscribe(result => {
-      console.log('Logged out', result);
-    });
+    this.oidcSecurityService.logoff().subscribe();
   }
 }

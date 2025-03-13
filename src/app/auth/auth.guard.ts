@@ -1,27 +1,24 @@
 // src/app/auth/auth.guard.ts
-import { inject } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { map, tap } from 'rxjs/operators';
-import { OidcSecurityService } from 'angular-auth-oidc-client';
+import { Observable, tap } from 'rxjs';
+import { AuthService } from './auth.service';
 
-export const authGuard = () => {
-  const oidcSecurityService = inject(OidcSecurityService);
-  const router = inject(Router);
+@Injectable({
+    providedIn: 'root'
+})
+export class AuthGuard {
+    constructor(private authService: AuthService, private router: Router) {}
 
-  return oidcSecurityService.isAuthenticated$.pipe(
-    map(({ isAuthenticated }) => isAuthenticated),
-    tap(isAuthenticated => {
-      if (!isAuthenticated) {
-        console.log('Auth guard - user not authenticated, redirecting to landing');
-        // Store the attempted URL for redirecting after login
-        const currentUrl = router.url;
-        if (currentUrl && currentUrl !== '/' && currentUrl !== '/home' && currentUrl !== '/landing') {
-          sessionStorage.setItem('redirectUrl', currentUrl);
-        }
-        router.navigate(['/landing']);
-      } else {
-        console.log('Auth guard - user is authenticated');
-      }
-    })
-  );
-};
+    canActivate(): Observable<boolean> {
+        return this.authService.isAuthenticated$.pipe(
+            tap(isAuthenticated => {
+                if (!isAuthenticated) {
+                    // Store the attempted URL for redirecting after login
+                    // sessionStorage.setItem('redirectUrl', this.router.url);
+                    this.router.navigate(['/']);
+                }
+            })
+        );
+    }
+}

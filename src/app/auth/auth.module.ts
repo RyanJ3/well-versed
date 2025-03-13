@@ -2,7 +2,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AuthModule as OidcAuthModule, LogLevel } from 'angular-auth-oidc-client';
-import {environment} from "../../environment/environment";
+import { environment } from '../../environments/environment';
 
 @NgModule({
   declarations: [],

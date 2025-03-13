@@ -1,38 +1,34 @@
 // src/app/app.routes.ts
-import { Routes } from '@angular/router';
-import { BibleTrackerComponent } from './bible-tracker/bible-tracker.component';
-import { FlowMemorizationComponent } from './memorization/flow/flow-memorization.component';
-import { FlashcardComponent } from './memorization/flashcard/flashcard.component';
-import { authGuard } from './auth/auth.guard';
-import { HomeComponent } from './home/home.component';
-import { ErrorPageComponent } from './auth/error-page.component';
+import {Routes} from '@angular/router';
+import {BibleTrackerComponent} from './bible-tracker/bible-tracker.component';
+import {FlowMemorizationComponent} from './memorization/flow/flow-memorization.component';
+import {FlashcardComponent} from './memorization/flashcard/flashcard.component';
+import {map} from 'rxjs/operators';
+
+// Create a simple auth guard function using the oidcSecurityService
+export function authGuard(oidcSecurityService: any) {
+  return () =>
+    oidcSecurityService.isAuthenticated$.pipe(
+      map((isAuthed: any) => {
+        if (!isAuthed.isAuthenticated) {
+          // Store the attempted URL for redirecting after login
+          sessionStorage.setItem('redirectUrl', oidcSecurityService.router.url);
+          return false;
+        }
+        return true;
+      })
+    );
+}
 
 export const routes: Routes = [
-  // Public routes - root path shows login page without a guard
-  { path: '', component: HomeComponent },
-  { path: 'landing', component: HomeComponent },
+  {path: '', component: BibleTrackerComponent},  // Home page
+  {path: 'stats', component: BibleTrackerComponent, canActivate: [authGuard]}, // stats page (protected)
+  {path: 'flow', component: FlowMemorizationComponent, canActivate: [authGuard]},  // FLOW memorization tool route (protected)
+  {path: 'flashcard', component: FlashcardComponent, canActivate: [authGuard]},  // Flashcard memorization tool (protected)
 
-  // Home route (protected, requires authentication)
-  { path: 'home', component: HomeComponent, canActivate: [() => authGuard()] },
-
-  // Cognito authentication callback route
-  { path: 'callback', component: HomeComponent },
-
-  // Protected routes (require authentication)
-  { path: 'tracker', component: BibleTrackerComponent, canActivate: [() => authGuard()] },
-  { path: 'stats', component: BibleTrackerComponent, canActivate: [() => authGuard()] },
-  { path: 'flow', component: FlowMemorizationComponent, canActivate: [() => authGuard()] },
-  { path: 'flashcard', component: FlashcardComponent, canActivate: [() => authGuard()] },
-
-  // Error pages
-  { path: 'error/:status', component: ErrorPageComponent },
-
-  // Handle specific error redirects
-  { path: '401', redirectTo: 'error/401' },
-  { path: '403', redirectTo: 'error/403' },
-  { path: '404', redirectTo: 'error/404' },
-  { path: '500', redirectTo: 'error/500' },
+  // Auth callback route
+  // {path: 'callback', component: AuthCallbackComponent},
 
   // Catch-all route (404)
-  { path: '**', redirectTo: 'error/404' }
+  {path: '**', redirectTo: ''}
 ];

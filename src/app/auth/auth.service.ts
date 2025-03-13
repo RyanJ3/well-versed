@@ -1,80 +1,63 @@
-// src/app/shared/services/error-handling.service.ts
+// src/app/auth/auth.service.ts
 import { Injectable } from '@angular/core';
-import { Router } from '@angular/router';
-import { HttpErrorResponse } from '@angular/common/http';
+import { OidcSecurityService } from 'angular-auth-oidc-client';
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 @Injectable({
-  providedIn: 'root'
+    providedIn: 'root'
 })
-export class ErrorHandlingService {
+export class AuthService {
+    private configId = 'well-versed-auth';
 
-  constructor(private router: Router) { }
+    constructor(private oidcSecurityService: OidcSecurityService) {}
 
-  /**
-   * Handle HTTP errors by navigating to the appropriate error page
-   * @param error The HTTP error response
-   */
-  handleHttpError(error: HttpErrorResponse): void {
-    // Navigate to the appropriate error page based on status code
-    if (error.status) {
-      this.navigateToErrorPage(error.status.toString());
-    } else {
-      // Generic error handling for non-HTTP errors
-      this.navigateToErrorPage('500');
-    }
-  }
-
-  /**
-   * Handle route errors by navigating to the appropriate error page
-   * @param error The error object
-   */
-  handleRouteError(error: any): void {
-    let errorCode = '500';
-
-    // Try to determine if this is a specific type of error
-    if (error && error.status) {
-      errorCode = error.status.toString();
-    } else if (error && error.rejection && error.rejection.status) {
-      errorCode = error.rejection.status.toString();
-    } else if (error && error.message) {
-      // Analyze error message to determine type
-      if (error.message.includes('Cannot match any routes')) {
-        errorCode = '404';
-      }
+    /**
+     * Check if user is authenticated
+     */
+    get isAuthenticated$(): Observable<boolean> {
+        return this.oidcSecurityService.isAuthenticated$.pipe(
+            map(({ isAuthenticated }) => isAuthenticated)
+        );
     }
 
-    this.navigateToErrorPage(errorCode);
-  }
-
-  /**
-   * Navigate to a specific error page
-   * @param statusCode The HTTP status code
-   */
-  navigateToErrorPage(statusCode: string): void {
-    // Check for common status codes
-    switch (statusCode) {
-      case '400':
-      case '401':
-      case '403':
-      case '404':
-      case '405':
-      case '500':
-      case '502':
-      case '503':
-      case '504':
-        this.router.navigate(['/error', statusCode]);
-        break;
-      default:
-        // Use a generic error for uncommon codes
-        this.router.navigate(['/error', '500']);
+    /**
+     * Get user data
+     */
+    get userData$(): Observable<any> {
+        return this.oidcSecurityService.userData$;
     }
-  }
 
-  /**
-   * Manually show a specific error page
-   * @param statusCode The HTTP status code to display
-   */
-  showErrorPage(statusCode: string = '404'): void {
-    this.navigateToErrorPage(statusCode);
-  }
+    /**
+     * Get the configuration
+     */
+    get configuration$(): Observable<any> {
+        return this.oidcSecurityService.getConfiguration(this.configId);
+    }
+
+    /**
+     * Initialize authentication
+     */
+    checkAuth(): Observable<any> {
+        return this.oidcSecurityService.checkAuth(this.configId);
+    }
+
+    /**
+     * Start the login process
+     */
+    login(): void {
+        this.oidcSecurityService.authorize(this.configId);
+    }
+
+    /**
+     * Logout the user
+     */
+    logout(): void {
+        // Clear session storage
+        if (window.sessionStorage) {
+            window.sessionStorage.clear();
+        }
+        this.oidcSecurityService.logoffLocal();
+        this.oidcSecurityService.logoff(this.configId).subscribe();
+    }
 }
